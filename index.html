@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<title>Pour toi ❤️</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --ink:#0d0608;
+  --rose:#e8356d;
+  --blush:#f7a8c0;
+  --petal:#fde8ef;
+  --gold:#f2c07e;
+  --white:#fff;
+  --glass:rgba(255,255,255,0.06);
+  --border:rgba(232,53,109,0.18);
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;font-size:16px}
+
+body{
+  background:var(--ink);
+  color:var(--white);
+  font-family:'DM Sans',sans-serif;
+  font-weight:300;
+  overflow-x:hidden;
+  cursor:none;
+}
+
+/* ── CUSTOM CURSOR ── */
+.cursor{
+  width:10px;height:10px;
+  background:var(--rose);
+  border-radius:50%;
+  position:fixed;top:0;left:0;
+  pointer-events:none;
+  z-index:9999;
+  transform:translate(-50%,-50%);
+  transition:transform .15s ease, width .2s, height .2s, background .2s;
+  mix-blend-mode:screen;
+}
+.cursor.big{width:36px;height:36px;background:rgba(232,53,109,0.25)}
+
+/* ── CANVAS ── */
+#bg{position:fixed;inset:0;z-index:0;pointer-events:none}
+
+/* ── NOISE GRAIN ── */
+body::after{
+  content:'';
+  position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  opacity:.035;
+  pointer-events:none;
+  z-index:1;
+}
+
+/* ── SECTIONS WRAPPER ── */
+main{position:relative;z-index:2}
+
+/* ══════════════════════════════
+   HERO
+══════════════════════════════ */
+.hero{
+  min-height:100svh;
+  display:flex;flex-direction:column;
+  justify-content:center;align-items:center;
+  text-align:center;
+  padding:80px 28px 60px;
+  position:relative;
+}
+
+.hero-eyebrow{
+  font-size:.65rem;
+  letter-spacing:.45em;
+  text-transform:uppercase;
+  color:var(--blush);
+  opacity:0;
+  animation:fadeUp .9s .3s forwards;
+  margin-bottom:22px;
+}
+
+.hero-title{
+  font-family:'Cormorant Garamond',serif;
+  font-weight:300;
+  font-style:italic;
+  font-size:clamp(3rem,11vw,7rem);
+  line-height:1.05;
+  background:linear-gradient(150deg,#fff 0%,var(--blush) 45%,var(--gold) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+  opacity:0;
+  animation:fadeUp .9s .55s forwards;
+  margin-bottom:8px;
+}
+
+.hero-name{
+  font-family:'Cormorant Garamond',serif;
+  font-weight:600;
+  font-size:clamp(1rem,4vw,1.6rem);
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--rose);
+  opacity:0;
+  animation:fadeUp .9s .8s forwards;
+  margin-bottom:44px;
+}
+
+.hero-heart{
+  font-size:2.8rem;
+  display:block;
+  opacity:0;
+  animation:fadeUp .9s 1s forwards, pulse 2s 2s ease-in-out infinite;
+  margin-bottom:52px;
+}
+
+.scroll-hint{
+  opacity:0;
+  animation:fadeUp .9s 1.4s forwards;
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  color:rgba(255,255,255,.3);
+  font-size:.65rem;letter-spacing:.3em;text-transform:uppercase;
+}
+.scroll-hint span.line{
+  display:block;width:1px;height:40px;
+  background:linear-gradient(to bottom,var(--rose),transparent);
+  animation:lineDrop 1.8s ease-in-out infinite;
+}
+
+/* ══════════════════════════════
+   MUSIC PLAYER
+══════════════════════════════ */
+.music-bar{
+  position:fixed;top:20px;right:20px;
+  z-index:100;
+  display:flex;align-items:center;gap:10px;
+  background:rgba(13,6,8,.7);
+  border:1px solid var(--border);
+  border-radius:40px;
+  padding:10px 18px;
+  backdrop-filter:blur(14px);
+  opacity:0;
+  animation:fadeDown .8s 2s forwards;
+}
+.music-bar button{
+  background:none;border:none;cursor:none;
+  color:var(--blush);font-size:1.1rem;
+  line-height:1;transition:transform .2s;
+}
+.music-bar button:hover{transform:scale(1.2)}
+.music-label{font-size:.65rem;color:rgba(255,255,255,.45);letter-spacing:.1em}
+.music-eq{display:flex;gap:2px;align-items:flex-end;height:14px}
+.music-eq span{
+  display:block;width:3px;
+  background:var(--rose);border-radius:2px;
+  animation:eq 0.8s ease-in-out infinite alternate;
+}
+.music-eq span:nth-child(2){animation-delay:.15s;height:8px}
+.music-eq span:nth-child(3){animation-delay:.3s;height:12px}
+.music-eq span:nth-child(1){height:5px}
+.music-eq span:nth-child(4){height:9px;animation-delay:.45s}
+.music-eq.paused span{animation-play-state:paused}
+
+/* ══════════════════════════════
+   SHARED SECTION STYLES
+══════════════════════════════ */
+section{padding:90px 28px;position:relative;overflow:hidden}
+.container{max-width:660px;margin:0 auto}
+
+.s-label{
+  font-size:.62rem;letter-spacing:.4em;text-transform:uppercase;
+  color:var(--rose);margin-bottom:14px;text-align:center;
+}
+.s-title{
+  font-family:'Cormorant Garamond',serif;
+  font-weight:300;font-style:italic;
+  font-size:clamp(2rem,6vw,3.4rem);
+  line-height:1.2;text-align:center;
+  margin-bottom:44px;
+}
+.s-rule{
+  width:50px;height:1px;
+  background:linear-gradient(90deg,transparent,var(--rose),transparent);
+  margin:0 auto 50px;
+}
+
+/* ══════════════════════════════
+   VIDEO
+══════════════════════════════ */
+.video-section{
+  background:radial-gradient(ellipse 80% 50% at 50% 50%,rgba(232,53,109,.07),transparent);
+}
+.video-frame{
+  position:relative;
+  max-width:340px;margin:0 auto;
+  border-radius:24px;overflow:hidden;
+  border:1px solid var(--border);
+  box-shadow:0 0 0 1px rgba(232,53,109,.08), 0 40px 80px rgba(0,0,0,.6), 0 0 100px rgba(232,53,109,.06);
+  aspect-ratio:9/16;
+  background:rgba(255,255,255,.03);
+}
+.video-frame video{width:100%;height:100%;object-fit:cover;display:block}
+.video-over{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  background:rgba(13,6,8,.65);
+  backdrop-filter:blur(4px);
+}
+.video-over .vico{font-size:2.6rem}
+.video-over p{font-size:.8rem;color:rgba(255,255,255,.4);text-align:center;padding:0 24px;line-height:1.6}
+
+/* ══════════════════════════════
+   2H DU MATIN — SPECIAL CARD
+══════════════════════════════ */
+.night-section{
+  background:linear-gradient(180deg,transparent,rgba(232,53,109,.05) 50%,transparent);
+}
+.night-card{
+  background:var(--glass);
+  border:1px solid var(--border);
+  border-radius:28px;
+  padding:44px 32px;
+  backdrop-filter:blur(16px);
+  position:relative;overflow:hidden;
+  text-align:center;
+}
+.night-card::before{
+  content:'';
+  position:absolute;top:-60px;left:50%;transform:translateX(-50%);
+  width:200px;height:200px;
+  background:radial-gradient(circle,rgba(232,53,109,.12),transparent 70%);
+  pointer-events:none;
+}
+.night-time{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(4rem,18vw,9rem);
+  font-weight:300;
+  line-height:1;
+  background:linear-gradient(135deg,var(--rose),var(--gold));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+  display:block;
+  margin-bottom:6px;
+}
+.night-sub{
+  font-size:.65rem;letter-spacing:.35em;text-transform:uppercase;
+  color:rgba(255,255,255,.35);margin-bottom:30px;
+}
+.night-text{
+  font-size:clamp(.95rem,2.4vw,1.1rem);
+  line-height:1.9;
+  color:rgba(255,255,255,.8);
+  margin-bottom:20px;
+}
+.night-promise{
+  display:inline-block;
+  margin-top:12px;
+  padding:10px 26px;
+  border:1px solid rgba(232,53,109,.4);
+  border-radius:40px;
+  font-size:.75rem;
+  letter-spacing:.15em;
+  color:var(--blush);
+  text-transform:uppercase;
+}
+
+/* ══════════════════════════════
+   POURQUOI JE T'AIME
+══════════════════════════════ */
+.reasons-section{
+  background:radial-gradient(ellipse 70% 40% at 50% 60%,rgba(242,192,126,.05),transparent);
+}
+.reasons-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:16px;
+}
+.reason-card{
+  background:var(--glass);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:28px 26px;
+  display:flex;gap:18px;align-items:flex-start;
+  backdrop-filter:blur(10px);
+  transition:transform .3s, border-color .3s;
+  position:relative;overflow:hidden;
+}
+.reason-card::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(232,53,109,.06),transparent);
+  opacity:0;transition:opacity .3s;border-radius:20px;
+}
+.reason-card:hover{transform:translateY(-4px);border-color:rgba(232,53,109,.4)}
+.reason-card:hover::after{opacity:1}
+.reason-num{
+  font-family:'Cormorant Garamond',serif;
+  font-size:2.2rem;font-weight:300;font-style:italic;
+  color:rgba(232,53,109,.35);
+  line-height:1;min-width:40px;
+}
+.reason-body{}
+.reason-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.15rem;font-weight:600;
+  color:var(--blush);margin-bottom:6px;
+}
+.reason-desc{font-size:.9rem;color:rgba(255,255,255,.65);line-height:1.7}
+
+/* ══════════════════════════════
+   LETTRE
+══════════════════════════════ */
+.letter-section{
+  background:linear-gradient(180deg,transparent,rgba(232,53,109,.04) 50%,transparent);
+}
+.letter-wrap{
+  background:var(--glass);
+  border:1px solid var(--border);
+  border-radius:28px;
+  padding:48px 36px;
+  backdrop-filter:blur(14px);
+  position:relative;overflow:hidden;
+}
+.letter-wrap::before{
+  content:'"';
+  position:absolute;top:-20px;left:16px;
+  font-family:'Cormorant Garamond',serif;
+  font-size:12rem;font-style:italic;
+  color:rgba(232,53,109,.06);
+  line-height:1;pointer-events:none;
+}
+.letter-p{
+  font-size:clamp(.95rem,2.3vw,1.08rem);
+  line-height:2;
+  color:rgba(255,255,255,.82);
+  margin-bottom:24px;
+}
+.letter-p:last-of-type{margin-bottom:0}
+.letter-sig{
+  margin-top:36px;
+  font-family:'Cormorant Garamond',serif;
+  font-style:italic;font-size:1.6rem;
+  color:var(--blush);text-align:right;
+}
+
+/* ══════════════════════════════
+   JEUDI — COUNTDOWN
+══════════════════════════════ */
+.thursday-section{
+  background:radial-gradient(ellipse 80% 50% at 50% 50%,rgba(232,53,109,.08),transparent);
+  text-align:center;
+}
+.countdown-wrap{
+  display:flex;justify-content:center;gap:16px;flex-wrap:wrap;
+  margin-bottom:40px;
+}
+.count-box{
+  background:var(--glass);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:22px 20px 16px;
+  min-width:72px;
+  backdrop-filter:blur(10px);
+  position:relative;overflow:hidden;
+}
+.count-box::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(232,53,109,.07),transparent);
+}
+.count-num{
+  font-family:'Cormorant Garamond',serif;
+  font-size:2.8rem;font-weight:300;
+  line-height:1;color:var(--white);
+  display:block;position:relative;
+}
+.count-label{
+  font-size:.6rem;letter-spacing:.25em;text-transform:uppercase;
+  color:rgba(255,255,255,.35);display:block;margin-top:6px;position:relative;
+}
+.thursday-promise{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(1.3rem,4vw,2rem);
+  font-style:italic;
+  color:rgba(255,255,255,.75);
+  line-height:1.6;
+  max-width:500px;margin:0 auto 36px;
+}
+
+/* ══════════════════════════════
+   CTA FINAL
+══════════════════════════════ */
+.cta-section{
+  text-align:center;
+  padding-bottom:120px;
+}
+.cta-section .s-title{margin-bottom:12px}
+.cta-sub{
+  font-size:.95rem;color:rgba(255,255,255,.4);margin-bottom:44px;
+  letter-spacing:.05em;
+}
+.btn-main{
+  display:inline-block;
+  padding:18px 44px;
+  border-radius:50px;
+  background:linear-gradient(135deg,var(--rose) 0%,#b01f53 100%);
+  color:#fff;
+  font-family:'DM Sans',sans-serif;
+  font-size:.9rem;font-weight:400;
+  letter-spacing:.12em;text-transform:uppercase;
+  border:none;cursor:none;
+  box-shadow:0 12px 44px rgba(232,53,109,.38);
+  transition:transform .25s, box-shadow .25s;
+  position:relative;overflow:hidden;
+  text-decoration:none;
+}
+.btn-main::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.18),transparent);
+  opacity:0;transition:opacity .25s;
+}
+.btn-main:hover{transform:translateY(-4px) scale(1.04);box-shadow:0 20px 60px rgba(232,53,109,.5)}
+.btn-main:hover::before{opacity:1}
+
+/* ══════════════════════════════
+   TOAST
+══════════════════════════════ */
+.toast{
+  position:fixed;bottom:48px;left:50%;
+  transform:translateX(-50%) translateY(120px);
+  background:linear-gradient(135deg,var(--rose),#b01f53);
+  color:#fff;padding:14px 30px;border-radius:50px;
+  font-size:.85rem;letter-spacing:.08em;
+  box-shadow:0 10px 40px rgba(232,53,109,.4);
+  transition:transform .4s cubic-bezier(.34,1.56,.64,1);
+  z-index:200;white-space:nowrap;
+  pointer-events:none;
+}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* ══════════════════════════════
+   REVEAL ON SCROLL
+══════════════════════════════ */
+.reveal{opacity:0;transform:translateY(44px);transition:opacity .8s ease,transform .8s ease}
+.reveal.up{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:.1s}
+.reveal-delay-2{transition-delay:.2s}
+.reveal-delay-3{transition-delay:.3s}
+
+/* ══════════════════════════════
+   KEYFRAMES
+══════════════════════════════ */
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{transform:scale(1)}40%{transform:scale(1.22)}60%{transform:scale(1.1)}}
+@keyframes lineDrop{0%,100%{opacity:.3;transform:scaleY(.5)}50%{opacity:1;transform:scaleY(1)}}
+@keyframes eq{from{transform:scaleY(.4)}to{transform:scaleY(1.2)}}
+@keyframes floatUp{from{transform:translateY(105vh) rotate(0deg);opacity:.5}to{transform:translateY(-12vh) rotate(20deg);opacity:0}}
+</style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div class="cursor" id="cur"></div>
+
+<!-- CANVAS BG -->
+<canvas id="bg"></canvas>
+
+<!-- MUSIC BAR -->
+<div class="music-bar" id="mbar">
+  <div class="music-eq" id="eq">
+    <span></span><span></span><span></span><span></span>
+  </div>
+  <span class="music-label">Ambiance</span>
+  <button id="mBtn" aria-label="Musique">▶</button>
+</div>
+
+<main>
+
+<!-- ══════ HERO ══════ -->
+<div class="hero">
+  <p class="hero-eyebrow">Pour toi, uniquement</p>
+  <h1 class="hero-title">Joyeux<br>Anniversaire</h1>
+  <p class="hero-name">Mon Amour</p>
+  <span class="hero-heart">❤️</span>
+  <div class="scroll-hint">
+    <span>Découvrir</span>
+    <span class="line"></span>
+  </div>
+</div>
+
+<!-- ══════ VIDEO ══════ -->
+<section class="video-section">
+  <div class="container">
+    <div class="reveal">
+      <p class="s-label">Un message rien que pour toi</p>
+      <h2 class="s-title">Je voulais<br>te parler</h2>
+      <div class="s-rule"></div>
+    </div>
+    <div class="video-frame reveal reveal-delay-1">
+      <!--
+        ══════════════════════════════
+        REMPLACE "ta-video.mp4"
+        par le nom de ton fichier vidéo
+        ══════════════════════════════
+      -->
+      <iframe
+        src="https://drive.google.com/file/d/1Bl4IFlfVOCC0WVTNdiW1EzAQn2kcAviL/preview"
+        width="100%"
+        height="100%"
+        allow="autoplay"
+        allowfullscreen
+        style="border:none;border-radius:24px;display:block;"
+      ></iframe>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ 2H DU MATIN ══════ -->
+<section class="night-section">
+  <div class="container">
+    <div class="night-card reveal">
+      <span class="night-time">2:00</span>
+      <p class="night-sub">du matin</p>
+      <p class="night-text">
+        Tu es restée éveillée jusqu'à 2h du matin pour moi.<br>
+        Dans le silence de la nuit, pendant que le monde dormait,<br>
+        toi tu étais là — pour moi.
+      </p>
+      <p class="night-text">
+        Ce genre de geste, ça ne s'oublie pas.<br>
+        C'est exactement ça qui me rappelle à quel point<br>
+        j'ai de la chance de t'avoir.
+      </p>
+      <span class="night-promise">Je me rattraperai jeudi ✨</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ POURQUOI JE T'AIME ══════ -->
+<section class="reasons-section">
+  <div class="container">
+    <div class="reveal">
+      <p class="s-label">Ce que tu es pour moi</p>
+      <h2 class="s-title">Pourquoi<br>je t'aime</h2>
+      <div class="s-rule"></div>
+    </div>
+    <div class="reasons-grid">
+      <div class="reason-card reveal reveal-delay-1">
+        <span class="reason-num">01</span>
+        <div class="reason-body">
+          <p class="reason-title">Ta présence</p>
+          <p class="reason-desc">Même à distance tu es là. Ton énergie traverse les kilomètres et réchauffe mes journées sans que tu t'en rendes compte.</p>
+        </div>
+      </div>
+      <div class="reason-card reveal reveal-delay-2">
+        <span class="reason-num">02</span>
+        <div class="reason-body">
+          <p class="reason-title">Ta patience</p>
+          <p class="reason-desc">Tu me supportes dans mes absences, mes silences, mes journées dures. Cette patience-là, c'est un cadeau rare.</p>
+        </div>
+      </div>
+      <div class="reason-card reveal reveal-delay-3">
+        <span class="reason-num">03</span>
+        <div class="reason-body">
+          <p class="reason-title">Ton amour sincère</p>
+          <p class="reason-desc">Il n'y a pas de calcul dans ce que tu donnes. Tu aimes simplement, et ça, ça change tout.</p>
+        </div>
+      </div>
+      <div class="reason-card reveal">
+        <span class="reason-num">04</span>
+        <div class="reason-body">
+          <p class="reason-title">Ce que tu m'inspires</p>
+          <p class="reason-desc">Tu me rends meilleur. Chaque jour où je pense à toi, je veux être quelqu'un qui mérite ton amour.</p>
+        </div>
+      </div>
+      <div class="reason-card reveal reveal-delay-1">
+        <span class="reason-num">05</span>
+        <div class="reason-body">
+          <p class="reason-title">Ta force</p>
+          <p class="reason-desc">Tu portes tellement avec élégance. Cette force tranquille en toi m'impressionne et me touche profondément.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ LETTRE ══════ -->
+<section class="letter-section">
+  <div class="container">
+    <div class="reveal">
+      <p class="s-label">Du fond du cœur</p>
+      <h2 class="s-title">Ma lettre<br>pour toi</h2>
+      <div class="s-rule"></div>
+    </div>
+    <div class="letter-wrap reveal">
+      <p class="letter-p">
+        Mon amour, je sais que je n'ai pas été aussi présent que je le voulais hier.
+        Mais si tu savais combien de fois j'ai pensé à toi dans la journée —
+        chaque moment où j'aurais voulu être là.
+      </p>
+      <p class="letter-p">
+        Merci d'être restée éveillée pour moi.
+        Merci pour ton amour, ta patience, et tous les petits moments
+        qu'on partage même à travers un écran.
+      </p>
+      <p class="letter-p">
+        Tu n'es pas juste ma petite amie.
+        Tu es cette certitude douce au milieu de tout ce qui est flou.
+        Dans tout ce que je construis, tu es le pourquoi.
+      </p>
+      <p class="letter-p">
+        Quand tu rentreras jeudi — je promets qu'on crée
+        un moment rien que pour nous deux. Parce que tu mérites
+        d'être célébrée chaque jour, pas seulement aujourd'hui.
+      </p>
+      <div class="letter-sig">— Ton homme ❤️</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ JEUDI COUNTDOWN ══════ -->
+<section class="thursday-section">
+  <div class="container">
+    <div class="reveal">
+      <p class="s-label">Plus que quelques heures</p>
+      <h2 class="s-title">Jeudi,<br>je t'attends</h2>
+      <div class="s-rule"></div>
+    </div>
+    <div class="countdown-wrap reveal">
+      <div class="count-box">
+        <span class="count-num" id="cd-d">–</span>
+        <span class="count-label">Jours</span>
+      </div>
+      <div class="count-box">
+        <span class="count-num" id="cd-h">–</span>
+        <span class="count-label">Heures</span>
+      </div>
+      <div class="count-box">
+        <span class="count-num" id="cd-m">–</span>
+        <span class="count-label">Minutes</span>
+      </div>
+      <div class="count-box">
+        <span class="count-num" id="cd-s">–</span>
+        <span class="count-label">Secondes</span>
+      </div>
+    </div>
+    <p class="thursday-promise reveal">
+      "Ce moment ensemble<br>sera aussi beau que<br>tu le mérites."
+    </p>
+  </div>
+</section>
+
+<!-- ══════ CTA ══════ -->
+<section class="cta-section">
+  <div class="container reveal">
+    <h2 class="s-title">Je t'aime</h2>
+    <p class="cta-sub">Plus que les mots ne peuvent le dire</p>
+    <button class="btn-main" onclick="sendKiss()">Envoyer un bisou 💋</button>
+  </div>
+</section>
+
+</main>
+
+<div class="toast" id="toast">💋 Bisou reçu avec tout mon amour !</div>
+
+<script>
+/* ══ CURSOR ══ */
+const cur=document.getElementById('cur');
+document.addEventListener('mousemove',e=>{
+  cur.style.left=e.clientX+'px';
+  cur.style.top=e.clientY+'px';
+});
+document.querySelectorAll('a,button,.btn-main,.reason-card').forEach(el=>{
+  el.addEventListener('mouseenter',()=>cur.classList.add('big'));
+  el.addEventListener('mouseleave',()=>cur.classList.remove('big'));
+});
+
+/* ══ CANVAS PARTICLES ══ */
+const canvas=document.getElementById('bg');
+const ctx=canvas.getContext('2d');
+let W,H;
+function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight}
+resize();window.addEventListener('resize',resize);
+
+const SYMS=['❤','♥','·','✦','✧','•'];
+class P{
+  constructor(init=false){this.reset(init)}
+  reset(init=false){
+    this.x=Math.random()*W;
+    this.y=init?Math.random()*H:H+20;
+    this.size=Math.random()*12+5;
+    this.speed=Math.random()*0.5+0.15;
+    this.drift=(Math.random()-.5)*.35;
+    this.alpha=Math.random()*.28+.04;
+    this.sym=SYMS[Math.floor(Math.random()*SYMS.length)];
+    this.col=Math.random()>.6?'#e8356d':Math.random()>.5?'#f2c07e':'#f7a8c0';
+  }
+  step(){this.y-=this.speed;this.x+=this.drift;if(this.y<-30)this.reset()}
+  draw(){
+    ctx.save();ctx.globalAlpha=this.alpha;
+    ctx.fillStyle=this.col;ctx.font=`${this.size}px serif`;
+    ctx.fillText(this.sym,this.x,this.y);ctx.restore();
+  }
+}
+const pts=Array.from({length:60},(_,i)=>new P(true));
+(function loop(){ctx.clearRect(0,0,W,H);pts.forEach(p=>{p.step();p.draw()});requestAnimationFrame(loop)})();
+
+/* ══ SCROLL REVEAL ══ */
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('up')});
+},{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+/* ══ VIDEO PLACEHOLDER ══ */
+const vid=document.getElementById('vid');
+const vover=document.getElementById('vover');
+if(vid){
+  vid.addEventListener('canplay',()=>{if(vover)vover.style.display='none'});
+  vid.addEventListener('error',()=>{/* keep placeholder */});
+}
+
+/* ══ MUSIC — Web Audio API : joyeux + romantique + émouvant ══ */
+const mBtn=document.getElementById('mBtn');
+const eq=document.getElementById('eq');
+let playing=false;
+let actx=null;
+let masterGain=null;
+let nodes=[];
+
+function buildAmbiance(){
+  actx=new(window.AudioContext||window.webkitAudioContext)();
+
+  // Master avec compresseur doux pour éviter la saturation
+  const comp=actx.createDynamicsCompressor();
+  comp.threshold.value=-18;comp.knee.value=12;
+  comp.ratio.value=3;comp.attack.value=0.05;comp.release.value=0.25;
+  comp.connect(actx.destination);
+
+  masterGain=actx.createGain();
+  masterGain.gain.setValueAtTime(0,actx.currentTime);
+  masterGain.gain.linearRampToValueAtTime(0.6,actx.currentTime+3.5); // fondu doux
+  masterGain.connect(comp);
+  nodes.push(comp);
+
+  /* ── REVERB — salle chaleureuse ── */
+  const conv=actx.createConvolver();
+  const rlen=actx.sampleRate*3;
+  const rbuf=actx.createBuffer(2,rlen,actx.sampleRate);
+  for(let c=0;c<2;c++){
+    const d=rbuf.getChannelData(c);
+    for(let i=0;i<rlen;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/rlen,1.8);
+  }
+  conv.buffer=rbuf;
+  const revSend=actx.createGain();revSend.gain.value=0.28;
+  const revOut=actx.createGain();revOut.gain.value=0.9;
+  masterGain.connect(conv);conv.connect(revOut);revOut.connect(comp);
+  nodes.push(conv,revSend,revOut);
+
+  /* ── PAD La majeur — chaud, lumineux, enveloppant ──
+     La majeur = La Do# Mi  (A C# E)
+     Fréquences : La2=110, Do#3=138.6, Mi3=164.8
+                  La3=220, Do#4=277.2, Mi4=329.6, La4=440
+  */
+  function makePad(freq,detune,vol,type='sine'){
+    const osc=actx.createOscillator();
+    const g=actx.createGain();
+    const filt=actx.createBiquadFilter();
+    osc.type=type;
+    osc.frequency.value=freq;
+    osc.detune.value=detune;
+    filt.type='lowpass';filt.frequency.value=900;filt.Q.value=0.8;
+    g.gain.value=vol;
+    osc.connect(filt);filt.connect(g);g.connect(masterGain);
+    osc.start();
+    nodes.push(osc,g,filt);
+  }
+  // Basse fondamentale
+  makePad(110,0,0.16);      // La2
+  makePad(110,7,0.09);      // La2 désaccordé (chaleur)
+  // Harmoniques moyennes
+  makePad(164.8,0,0.12);    // Mi3
+  makePad(220,-5,0.10);     // La3
+  makePad(277.2,4,0.08);    // Do#3 — la tierce majeure = joie !
+  // Brillance haute douce
+  makePad(329.6,0,0.06);    // Mi4
+  makePad(440,3,0.04,'triangle'); // La4 triangle (plus doux que sine)
+
+  /* ── LFO — vibrato très lent sur le pad (effet respirant) ── */
+  const lfo=actx.createOscillator();
+  const lfoGain=actx.createGain();
+  lfo.frequency.value=0.18; // très lent
+  lfoGain.gain.value=6;     // petite modulation
+  lfo.connect(lfoGain);
+  // On module le filtre du pad
+  lfo.start();
+  nodes.push(lfo,lfoGain);
+
+  /* ── PIANO — La majeur, séquence romantique et émotionnelle ──
+     Gamme La majeur : La Si Do# Ré# Mi Fa# Sol# La
+     Hz :           220 246.9 277.2 311.1 329.6 370 415.3 440
+  */
+  const A_MAJOR=[
+    220,   // La3
+    246.9, // Si3
+    277.2, // Do#4
+    311.1, // Ré#4
+    329.6, // Mi4
+    370,   // Fa#4
+    415.3, // Sol#4
+    440,   // La4
+    493.9, // Si4
+    554.4, // Do#5
+    659.3, // Mi5
+  ];
+
+  // Séquence émotionnelle : monte, redescend, respire
+  // Indices dans A_MAJOR
+  const SEQ=[
+    {i:0,oct:1,dur:2.2,vol:0.13},  // La3 — ancrage
+    {i:2,oct:1,dur:1.8,vol:0.11},  // Do#4 — joie
+    {i:4,oct:1,dur:2.0,vol:0.12},  // Mi4 — ouverture
+    {i:2,oct:1,dur:1.6,vol:0.10},  // Do#4
+    {i:5,oct:1,dur:2.2,vol:0.13},  // Fa#4 — émotion
+    {i:4,oct:1,dur:1.8,vol:0.11},  // Mi4
+    {i:2,oct:1,dur:1.6,vol:0.10},  // Do#4
+    {i:0,oct:1,dur:2.4,vol:0.12},  // La3 — retour doux
+    {i:7,oct:1,dur:2.0,vol:0.13},  // La4 — montée
+    {i:9,oct:1,dur:1.8,vol:0.14},  // Do#5 — pic émotionnel
+    {i:10,oct:1,dur:2.2,vol:0.13}, // Mi5 — apogée
+    {i:7,oct:1,dur:2.0,vol:0.11},  // La4 — descente douce
+    {i:4,oct:1,dur:2.4,vol:0.10},  // Mi4
+    {i:2,oct:1,dur:2.0,vol:0.09},  // Do#4
+    {i:0,oct:1,dur:3.0,vol:0.08},  // La3 — résolution
+  ];
+
+  function playPianoNote(freq,time,dur,vol){
+    // Piano = triangle + harmonique légère
+    [1,2].forEach((mult,idx)=>{
+      const osc=actx.createOscillator();
+      const env=actx.createGain();
+      const filt=actx.createBiquadFilter();
+      osc.type=idx===0?'triangle':'sine';
+      osc.frequency.value=freq*mult;
+      filt.type='lowpass';
+      filt.frequency.value=idx===0?3000:1200;
+      const v=idx===0?vol:vol*0.25;
+      env.gain.setValueAtTime(0,time);
+      env.gain.linearRampToValueAtTime(v,time+0.03);        // attaque rapide
+      env.gain.setValueAtTime(v*0.7,time+0.12);             // sustain
+      env.gain.exponentialRampToValueAtTime(0.0001,time+dur);// release naturel
+      osc.connect(filt);filt.connect(env);env.connect(masterGain);
+      osc.start(time);osc.stop(time+dur+0.1);
+    });
+  }
+
+  // Basse discrète (La1=55Hz) sur les temps forts
+  function playBass(freq,time,dur){
+    const osc=actx.createOscillator();
+    const env=actx.createGain();
+    const filt=actx.createBiquadFilter();
+    osc.type='sine';osc.frequency.value=freq/2;
+    filt.type='lowpass';filt.frequency.value=200;
+    env.gain.setValueAtTime(0,time);
+    env.gain.linearRampToValueAtTime(0.09,time+0.05);
+    env.gain.exponentialRampToValueAtTime(0.0001,time+dur*0.8);
+    osc.connect(filt);filt.connect(env);env.connect(masterGain);
+    osc.start(time);osc.stop(time+dur);
+  }
+
+  let seqIdx=0;
+  let nextTime=actx.currentTime+1.0;
+
+  function scheduleNext(){
+    if(!playing||!actx) return;
+    const note=SEQ[seqIdx%SEQ.length];
+    const freq=A_MAJOR[note.i];
+    playPianoNote(freq,nextTime,note.dur,note.vol);
+    // Basse tous les 4 notes
+    if(seqIdx%4===0) playBass(110,nextTime,note.dur*1.2);
+    nextTime+=note.dur*(0.88+Math.random()*0.18);
+    seqIdx++;
+    const wait=(nextTime-actx.currentTime-0.05)*1000;
+    setTimeout(scheduleNext,Math.max(50,wait));
+  }
+  scheduleNext();
+
+  /* ── BRUIT DOUX — texture vinyle ── */
+  const nBuf=actx.createBuffer(1,actx.sampleRate*2,actx.sampleRate);
+  const nd=nBuf.getChannelData(0);
+  for(let i=0;i<nd.length;i++) nd[i]=(Math.random()*2-1);
+  const nSrc=actx.createBufferSource();nSrc.buffer=nBuf;nSrc.loop=true;
+  const nFilt=actx.createBiquadFilter();nFilt.type='bandpass';nFilt.frequency.value=300;nFilt.Q.value=0.4;
+  const nGain=actx.createGain();nGain.gain.value=0.012;
+  nSrc.connect(nFilt);nFilt.connect(nGain);nGain.connect(masterGain);
+  nSrc.start();
+  nodes.push(nSrc,nFilt,nGain);
+}
+
+function stopAmbiance(){
+  if(!actx) return;
+  masterGain.gain.linearRampToValueAtTime(0,actx.currentTime+2);
+  setTimeout(()=>{
+    nodes.forEach(n=>{try{n.disconnect()}catch(e){}});
+    nodes=[];
+    try{actx.close()}catch(e){}
+    actx=null;masterGain=null;
+  },2100);
+}
+
+mBtn.addEventListener('click',()=>{
+  if(playing){
+    stopAmbiance();
+    mBtn.textContent='▶';
+    eq.classList.add('paused');
+  } else {
+    buildAmbiance();
+    mBtn.textContent='⏸';
+    eq.classList.remove('paused');
+  }
+  playing=!playing;
+});
+
+/* ══ COUNTDOWN TO THURSDAY ══ */
+function nextThursday(){
+  const now=new Date();
+  const d=new Date(now);
+  const day=d.getDay();// 0=Sun,4=Thu
+  const daysUntil=(4-day+7)%7||7;
+  d.setDate(d.getDate()+daysUntil);
+  d.setHours(12,0,0,0);// jeudi midi
+  return d;
+}
+function updateCD(){
+  const target=nextThursday();
+  const diff=target-new Date();
+  if(diff<=0){
+    ['cd-d','cd-h','cd-m','cd-s'].forEach(id=>{document.getElementById(id).textContent='0'});
+    return;
+  }
+  const s=Math.floor(diff/1000);
+  const m=Math.floor(s/60);
+  const h=Math.floor(m/60);
+  const dd=Math.floor(h/24);
+  document.getElementById('cd-d').textContent=String(dd).padStart(2,'0');
+  document.getElementById('cd-h').textContent=String(h%24).padStart(2,'0');
+  document.getElementById('cd-m').textContent=String(m%60).padStart(2,'0');
+  document.getElementById('cd-s').textContent=String(s%60).padStart(2,'0');
+}
+updateCD();setInterval(updateCD,1000);
+
+/* ══ TOAST ══ */
+function sendKiss(){
+  const t=document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3200);
+}
+</script>
+</body>
+</html>
